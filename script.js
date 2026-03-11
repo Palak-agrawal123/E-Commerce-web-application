@@ -1,53 +1,88 @@
-const products = [
+import { db } from "./firebase.js";
+import { ref, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-{
-id:1,
-name:"Nike Shoes",
-price:1999,
-image:"https://images.unsplash.com/photo-1542291026-7eec264c27ff"
-},
+const productsDiv = document.getElementById("products");
+const searchInput = document.getElementById("search");
 
-{
-id:2,
-name:"T-Shirt",
-price:499,
-image:"https://images.unsplash.com/photo-1521572163474-6864f9cf17ab"
-},
+let allProducts = [];
 
-{
-id:3,
-name:"Watch",
-price:1499,
-image:"https://images.unsplash.com/photo-1523275335684-37898b6baf30"
-},
+async function loadProducts() {
 
-{
-id:4,
-name:"Jeans",
-price:999,
-image:"https://images.unsplash.com/photo-1512436991641-6745cdb1723f"
-},
+const snapshot = await get(ref(db,"products"));
 
-{
-id:5,
-name:"Headphones",
-price:1999,
-image:"https://images.unsplash.com/photo-1585386959984-a4155224a1ad"
-},
+const data = snapshot.val();
 
-{
-id:6,
-name:"Sneakers",
-price:2499,
-image:"https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb"
-}
+allProducts = Object.values(data);
 
-];
-
-function openProduct(id){
-
-localStorage.setItem("productId",id);
-
-window.location.href="product.html";
+displayProducts(allProducts);
 
 }
+
+function displayProducts(products){
+
+productsDiv.innerHTML = "";
+
+products.forEach(p => {
+
+productsDiv.innerHTML += `
+<div class="product">
+<img src="${p.image}" width="200">
+<h3>${p.name}</h3>
+<p>Price: $${p.price}</p>
+
+<button onclick="addToCart('${p.name}',${p.price},'${p.image}')">
+Add to Cart
+</button>
+
+</div>
+`;
+
+});
+
+}
+
+searchInput.addEventListener("input", function(){
+
+let value = searchInput.value.toLowerCase();
+
+let filtered = allProducts.filter(p =>
+p.name.toLowerCase().includes(value)
+);
+
+displayProducts(filtered);
+
+});
+
+window.addToCart = function(name,price){
+
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+cart.push({name,price,image});
+
+localStorage.setItem("cart",JSON.stringify(cart));
+
+alert("Added to cart");
+
+}
+
+loadProducts();
+window.addToCart = function(name,price,image){
+
+if(!name || !price || !image){
+return;
+}
+
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+cart.push({
+name:name,
+price:price,
+image:image
+});
+
+localStorage.setItem("cart",JSON.stringify(cart));
+
+alert("Added to cart");
+
+}
+
