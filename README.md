@@ -25,5 +25,5 @@ This project simulates the basic functionality of modern online shopping platfor
 - HTML5 – Page structure  
 - CSS3 – Styling and layout  
 - JavaScript – Functionality and logic  
-- LocalStorage – Client-side storage  
+- Realtime firebase storage- for add and delete products
 - Live Server – Local development server # E-Commerce-web-application
